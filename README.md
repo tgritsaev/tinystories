@@ -20,11 +20,18 @@ python3 scripts/preprocess_data.py
 
 Run `wandb login` in bash, if you have not used wandb before.
 
-Run
-
+Then run
 ```shell
 python3 train.py
 ```
+
+## Project structure
+
+* `scripts/`: directory for preprocess pipelines.
+* `loss`: code for CrossEntropyLossWrapper.
+* `model`: code for Transformer model and it's subparts. 
+* `tinystories_dataset`: code for TinyStoriesDataset and it's funtions.
+* `train`: code training and testing pipeline.
 
 ## Authors
 
