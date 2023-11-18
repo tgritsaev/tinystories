@@ -18,6 +18,10 @@ python3 scripts/preprocess_data.py
 
 ## Train
 
+Run `wandb login` in bash, if you have not used wandb before.
+
+Run
+
 ```shell
 python3 train.py
 ```
@@ -28,4 +32,5 @@ python3 train.py
 
 ## Assignment
 
-Original task statement https://github.com/puhsu/dl-hse/tree/main/week06-transformers/bhw01
+Original task statement https://github.com/puhsu/dl-hse/tree/main/week06-transformers/bhw01.
+You can see consider my wandb project and report https://wandb.ai/tgritsaev/tiny_stories_dl2/overview?workspace=user-tgritsaev.
