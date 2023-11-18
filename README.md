@@ -1,5 +1,9 @@
-# tinystories
+# Tiny Stories
 HSE Deep Learning course homework.
+
+## Prerequisites
+
+`torch, numpy, sentencepiece, wandb, tqdm`
 
 ## Download and create data
 
