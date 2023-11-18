@@ -17,3 +17,11 @@ python3 scripts/preprocess_data.py
 ```shell
 python3 train.py
 ```
+
+## Authors
+
+* Timofei Gritsaev
+
+## Assignment
+
+Original task statement https://github.com/puhsu/dl-hse/tree/main/week06-transformers/bhw01
