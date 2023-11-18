@@ -27,11 +27,11 @@ python3 train.py
 
 ## Project structure
 
-* `scripts/`: directory for preprocess pipelines.
-* `loss`: code for CrossEntropyLossWrapper.
-* `model`: code for Transformer model and it's subparts. 
-* `tinystories_dataset`: code for TinyStoriesDataset and it's funtions.
-* `train`: code training and testing pipeline.
+* `scripts/` directory for preprocess pipelines.
+* `loss.py` code for CrossEntropyLossWrapper.
+* `model.py`: code for Transformer model and it's subparts. 
+* `tinystories_dataset.py`: code for TinyStoriesDataset and it's funtions.
+* `train.py`: code training and testing pipeline.
 
 ## Authors
 
