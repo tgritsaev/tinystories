@@ -116,6 +116,7 @@ data/
 input/
 saved/
 wandb/
+runs/
 
 # editor, os cache directory
 .vscode/
