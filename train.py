@@ -31,10 +31,8 @@ def train_epoch(model, dataloader, iterations, optimizer, lr_scheduler, loss_fn,
 
         loss_sum += loss.item()
 
-        print(i, iterations)
         if i + 1 >= iterations:
-            print("!!")
-            return loss_sum / iterations, outputs
+            return loss_sum / iterations, batch
 
 
 def test(model, dataloader, loss_fn, device):
@@ -58,7 +56,7 @@ def main(args):
     with open(args.config) as fin:
         config = json.load(fin)
 
-    wandb_writer = WandbWriter(config["wandb_project"])
+    wandb_writer = WandbWriter(config["wandb_project"], name=args.wandb_run_name)
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"device: {device}")
@@ -78,7 +76,12 @@ def main(args):
     epochs = config["train"]["epochs"]
     iterations = config["train"]["iterations"]
     optimizer = torch.optim.AdamW(model.parameters(), **config["optimizer"])
-    lr_scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, epochs * iterations)
+    lr_scheduler = torch.optim.lr_scheduler.OneCycleLR(
+        optimizer,
+        config["optimizer"]["lr"],
+        epochs * iterations,
+        pct_start=0.2,
+    )
     loss_fn = CrossEntropyLossWrapper()
 
     for epoch in tqdm(range(1, epochs + 1)):
@@ -86,11 +89,13 @@ def main(args):
         val_loss = test(model, val_dataloader, loss_fn, device)
 
         wandb_writer.log({"train loss": train_loss, "val loss": val_loss, "learning rate": lr_scheduler.get_last_lr()[0]})
-        wandb_writer.log_table([ids2text(train_example["logits"]), ids2text(train_example["src"])])
+        preds = ids2text(train_example["logits"].argmax(-1))
+        targets = ids2text(train_example["src"])
+        wandb_writer.log_table([[pred, target] for pred, target in zip(preds, targets)])
 
         print(f"----- epoch: {epoch} -----")
-        print(f"train loss: {train_loss:.4f} val loss: {val_loss:.4f}")
-        print(f"learning rate: {lr_scheduler.get_last_lr()[0]:.8f}")
+        print(f"train loss:\t{train_loss:.4f}\nval loss:\t{val_loss:.4f}\nlearning rate:\t{lr_scheduler.get_last_lr()[0]:.8f}")
+        print(f"--------------------------")
 
         if epoch % config["train"]["save_period"] == 0:
             torch.save(model.state_dict(), f"{save_dir}/checkpoint-{epoch}.pth")
@@ -100,5 +105,6 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-c", "--config", default="configs/train.json", type=str, help="config file path (default: configs/train.json)")
+    parser.add_argument("-w", "--wandb-run-name", default=None, type=str, help="wandb run name (default: None)")
     args = parser.parse_args()
     main(args)

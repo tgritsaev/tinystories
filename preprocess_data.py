@@ -1,4 +1,5 @@
 import os
+import shutil
 import glob
 import argparse
 from tqdm import tqdm
@@ -12,6 +13,12 @@ from src.utils import PAD_ID, UNK_ID, BOS_ID, EOS_ID
 
 def main(args):
     assert args.vocab_size > 0, "Vocab size must be positive"
+    if os.path.exists(f"{args.vocab_size}.model"):
+        os.remove(f"{args.vocab_size}.model")
+    if os.path.exists(f"{args.vocab_size}.vocab"):
+        os.remove(f"{args.vocab_size}.vocab")
+    if os.path.exists(f"{args.output_dir}"):
+        shutil.rmtree(f"{args.output_dir}/")
 
     print(f"limit: {args.limit}")
     os.makedirs(args.output_dir, exist_ok=True)
@@ -50,11 +57,14 @@ def main(args):
         idx = 0
         idxs = []
         for text in tqdm(data, "json -> npy"):
-            tokenized.append(tokenizer.encode(text["story"]).astype(np.int16))
+            tokenized.append(tokenizer.encode(text["story"]))
+            # for el in tokenized[-1]:
+            #     assert el > 0
+            #     assert el < args.vocab_size, f"{el=}\t{text['story']}\t{tokenized[-1]}"
             idxs.append(np.array([idx, idx + len(tokenized[-1])]))
             idx += len(tokenized[-1]) + 1
-        np.save(os.path.join(args.output_dir, f"{output_file_name}.npy"), np.concatenate(tokenized))
-        np.save(os.path.join(args.output_dir, f"{output_file_name}_idxs.npy"), np.stack(idxs))
+        np.save(os.path.join(args.output_dir, f"{output_file_name}.npy"), np.concatenate(tokenized).astype(np.int16))
+        np.save(os.path.join(args.output_dir, f"{output_file_name}_idxs.npy"), np.stack(idxs).astype(np.int64))
 
     print(f"Dataset is saved in {args.output_dir}.")
 

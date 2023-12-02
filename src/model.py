@@ -7,7 +7,7 @@ from src.utils import PAD_ID, BOS_ID, EOS_ID, text2ids, ids2text
 
 
 class PositionalEncoding(nn.Module):
-    def __init__(self, embed_dim, max_len: int = 5000):
+    def __init__(self, embed_dim, max_len):
         """
         Inputs
             embed_dim - Hidden dimensionality of the input.
@@ -45,13 +45,13 @@ class Transformer(nn.Module):
         self.max_len = max_len
         self.d_model = d_model
 
-        self.embedding = nn.Embedding(vocab_len + 4, d_model, PAD_ID)
+        self.embedding = nn.Embedding(vocab_len, d_model, PAD_ID)
         self.positional_encoding = PositionalEncoding(d_model, max_len)
 
         encoder_layer = nn.TransformerEncoderLayer(d_model, nhead, dim_feedforward, dropout, activation)
         self.transformer_encoder = nn.TransformerEncoder(encoder_layer, nlayers)
 
-        self.head = nn.Linear(d_model, vocab_len + 4)
+        self.head = nn.Linear(d_model, vocab_len)
         self._init_weights()
 
     def _init_weights(self):
@@ -79,8 +79,8 @@ class Transformer(nn.Module):
         tokens = torch.tensor(tokens).to(device)
 
         # generate hidden for prefix
-        logits = self.forward(tokens.unsqueeze(1))  # (S, 1, 1000)
-        logits = logits.transpose(0, 1).transpose(1, 2)  # (1, 1000, S)
+        logits = self.forward(tokens.unsqueeze(1))
+        logits = logits.transpose(0, 1).transpose(1, 2)
         logits /= temp
 
         # sample new token from logits

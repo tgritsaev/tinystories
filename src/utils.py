@@ -1,9 +1,8 @@
+import glob
 import wandb
 import sentencepiece as spm
 
-TOKENIZER_PATH = "4096.model"
-TOKENIZER = spm.SentencePieceProcessor(model_file=TOKENIZER_PATH)
-
+import torch
 
 # constants
 PAD_ID = 0
@@ -12,20 +11,32 @@ BOS_ID = 2
 EOS_ID = 3
 
 
+class TokenizerWrapper:
+    def __init__(self):
+        model_path = glob.glob("*.model")[0]
+        # vocab_path = os.path.splitext(model_path)[0] + ".vocab"
+        self.spm = spm.SentencePieceProcessor(model_file=model_path)
+
+
+TOKENIZER = TokenizerWrapper()
+
+
 def text2ids(texts):
-    return TOKENIZER.encode(texts)
+    return TOKENIZER.spm.encode(texts)
 
 
 def ids2text(ids):
-    return TOKENIZER.decode(ids)
+    if torch.is_tensor(ids):
+        return TOKENIZER.spm.decode(ids.tolist())
+    return TOKENIZER.spm.decode(ids)
 
 
 class WandbWriter:
-    def __init__(self, wandb_project: str = None):
-        print(f"wandb_project: {wandb_project}")
-        if wandb_project:
+    def __init__(self, project: str = None, name: str = None):
+        print(f"wandb project: {project}")
+        if project:
             self.skip = False
-            wandb.init(wandb_project)
+            wandb.init(project=project, name=name)
         else:
             self.skip = True
 
