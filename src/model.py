@@ -38,7 +38,7 @@ class Transformer(nn.Module):
         d_model: int,
         dim_feedforward: int,
         activation=F.leaky_relu,
-        max_len: int = 1000,
+        max_len: int = 256,
         dropout: float = 0.1,
     ):
         super().__init__()
