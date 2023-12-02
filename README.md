@@ -1,26 +1,25 @@
 # Tiny Stories
-HSE Deep Learning course homework.
+HSE Deep Learning course homework, see the [statement](https://github.com/puhsu/dl-hse/tree/main/week06-transformers/bhw01).
 
-## Prerequisites
+## Installation
 
-`torch, numpy, sentencepiece, wandb, tqdm`
-
-## Download and create data
-
-Download the TinySrories data
+1. Run
+```shell
+pip3 install -r requirements.txt
+```
+2. Download the TinySrories data
 ```shell
 wget --quiet --show-progress "https://huggingface.co/datasets/roneneldan/TinyStories/resolve/main/TinyStories_all_data.tar.gz"
 ```
-Create data in special format
+3. Run to create the dataset
 ```shell
-python3 scripts/preprocess_data.py -o output-dir -i input-dir -v vocab-size -l limit
+python3 preprocess_data.py -o output-dir -i input-dir -v vocab-size -l limit
 ```
 
 ## Train
 
-Run `wandb login` in bash, if you have not used wandb before.
-
-Then run
+1. Run `wandb login` in bash, if you have not used wandb before.
+2. Run
 ```shell
 python3 train.py
 ```
@@ -37,8 +36,6 @@ python3 train.py
 
 * Timofei Gritsaev
 
-## Assignment
-
-Original task statement https://github.com/puhsu/dl-hse/tree/main/week06-transformers/bhw01.
+## Wandb 
 
 You can see my wandb project and report https://wandb.ai/tgritsaev/tiny_stories_dl2/overview?workspace=user-tgritsaev.
