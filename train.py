@@ -17,6 +17,7 @@ def move_batch_to_device(device, **batch):
     for key in ["src"]:
         print("!!!", device)
         batch[key] = batch[key].to(device)
+        print("???", batch[key].device)
 
 
 def train_epoch(model, dataloader, iterations, optimizer, lr_scheduler, loss_fn, device):
