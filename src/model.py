@@ -62,7 +62,7 @@ class Transformer(nn.Module):
                 nn.init.uniform_(param)
 
     def forward(self, src: torch.Tensor, mask: torch.Tensor = None) -> torch.Tensor:
-        x = torch.sqrt(torch.tensor(self.d_model, device=x.device)) * self.embedding(src)
+        x = torch.sqrt(torch.tensor(self.d_model, device=src.device)) * self.embedding(src)
         x = self.positional_encoding(x)
         if mask is None:
             mask = nn.Transformer.generate_square_subsequent_mask(x.shape[0]).to(x.device)

@@ -24,7 +24,7 @@ class TinyStoriesDataset(Dataset):
         self.idxs = np.load(f"{data_path}/{part}_idxs.npy").astype(np.int64)[:limit]
         self.data = np.load(f"{data_path}/{part}.npy").astype(np.int16)
         print(f"Dataset has been created, dataset info:")
-        print(f"min:\t{self.data.min()}\nmax:\t{self.data.max()}\nshape:\t{self.data.shape}")
+        print(f"size:\t{self.idxs.shape[0]}\nmin:\t{self.data.min()}\nmax:\t{self.data.max()}\nshape:\t{self.data.shape}")
 
     def __len__(self):
         return self.idxs.shape[0]
