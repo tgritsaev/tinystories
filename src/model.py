@@ -62,6 +62,8 @@ class Transformer(nn.Module):
                 nn.init.uniform_(param)
 
     def forward(self, src: torch.Tensor, mask: torch.Tensor = None) -> torch.Tensor:
+        print(torch.sqrt(torch.tensor(self.d_model, device=src.device)).device)
+        print(src.device)
         x = torch.sqrt(torch.tensor(self.d_model, device=src.device)) * self.embedding(src)
         x = self.positional_encoding(x)
         if mask is None:
