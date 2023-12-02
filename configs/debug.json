@@ -26,5 +26,5 @@
         "iterations": 5,
         "save_period": 5
     },
-    "wandb_project": "dl-2-tinystories"
+    "wandb_project": null
 }
