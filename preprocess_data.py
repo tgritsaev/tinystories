@@ -74,6 +74,6 @@ if __name__ == "__main__":
     parser.add_argument("-i", "--input-dir", type=str, default="TinyStories_all_data", help="input directory path")
     parser.add_argument("-o", "--output-dir", type=str, default="data", help="output directory path")
     parser.add_argument("-v", "--vocab-size", type=int, default=4096, help="vocabulary size")
-    parser.add_argument("-l", "--limit", type=int, default=None, help="limit input_files from the TinyStories_all_data")
+    parser.add_argument("-l", "--limit", type=int, default=100, help="limit input_files from the TinyStories_all_data")
     args = parser.parse_args()
     main(args)

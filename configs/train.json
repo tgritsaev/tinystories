@@ -23,7 +23,7 @@
     "train": {
         "epochs": 10,
         "iterations": 1000,
-        "save_period": 5
+        "save_period": 2
     },
     "wandb_project": "dl-2-tinystories"
 }
