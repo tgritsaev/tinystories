@@ -70,8 +70,8 @@ def main(args):
     val_dataset = TinyStoriesDataset("val", **config["data"]["val"])
     val_dataloader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=num_workers, collate_fn=collate_fn)
 
-    model = Transformer(**config["model"]).to(device)
-    print(f"model.device: {model.device}")
+    model = Transformer(**config["model"])
+    model = model.to(device)
 
     epochs = config["train"]["epochs"]
     iterations = config["train"]["iterations"]
