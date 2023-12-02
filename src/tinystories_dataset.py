@@ -12,11 +12,6 @@ def collate_fn(items):
     return batch
 
 
-def move_batch_to_device(device, **batch):
-    for key in ["src"]:  # , "mask"
-        batch[key] = batch[key].to(device)
-
-
 class TinyStoriesDataset(Dataset):
     def __init__(self, part: str, data_path: str, limit: int = None):
         super().__init__()

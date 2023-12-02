@@ -7,10 +7,16 @@ from tqdm import tqdm
 import torch
 from torch.utils.data import DataLoader
 
-from src.tinystories_dataset import TinyStoriesDataset, collate_fn, move_batch_to_device
+from src.tinystories_dataset import TinyStoriesDataset, collate_fn
 from src.loss import CrossEntropyLossWrapper
 from src.model import Transformer
 from src.utils import ids2text, WandbWriter
+
+
+def move_batch_to_device(device, **batch):
+    for key in ["src"]:
+        print("!!!", device)
+        batch[key] = batch[key].to(device)
 
 
 def train_epoch(model, dataloader, iterations, optimizer, lr_scheduler, loss_fn, device):
