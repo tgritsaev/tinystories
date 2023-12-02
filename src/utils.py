@@ -13,9 +13,9 @@ EOS_ID = 3
 
 class TokenizerWrapper:
     def __init__(self):
-        model_path = glob.glob("*.model")[0]
-        # vocab_path = os.path.splitext(model_path)[0] + ".vocab"
-        self.spm = spm.SentencePieceProcessor(model_file=model_path)
+        matched_pattern = glob.glob("*.model")
+        if len(matched_pattern):
+            self.spm = spm.SentencePieceProcessor(model_file=matched_pattern[0])
 
 
 TOKENIZER = TokenizerWrapper()
