@@ -1,0 +1,30 @@
+{
+    "data": {
+        "batch_size": 4,
+        "num_workers": 1,
+        "train": {
+            "data_path": "data"
+        },
+        "val": {
+            "data_path": "data",
+            "limit": 10000
+        }
+    },
+    "model": {
+        "nlayers": 8,
+        "nhead": 8,
+        "vocab_len": 4096,
+        "d_model": 512,
+        "dim_feedforward": 1024
+    },
+    "optimizer": {
+        "lr": 3e-4,
+        "weight_decay": 1e-5
+    },
+    "train": {
+        "epochs": 10,
+        "iterations": 50,
+        "save_period": 5
+    },
+    "wandb_project": null
+}

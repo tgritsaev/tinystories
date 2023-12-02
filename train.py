@@ -1,44 +1,47 @@
+import os
 import json
 import argparse
+from datetime import datetime
 from tqdm import tqdm
-import wandb
 
 import torch
 from torch.utils.data import DataLoader
 
-from tinystories_dataset import TinyStoriesDataset, collate_fn, move_batch_to_device
-from loss import CrossEntropyLossWrapper
-from model import Transformer
+from src.tinystories_dataset import TinyStoriesDataset, collate_fn, move_batch_to_device
+from src.loss import CrossEntropyLossWrapper
+from src.model import Transformer
+from src.utils import ids2text, WandbWriter
 
 
-def train_epoch(model, dataloader, iterations, optimizer, scheduler, loss_fn, device):
+def train_epoch(model, dataloader, iterations, optimizer, lr_scheduler, loss_fn, device):
     model.train()
     loss_sum = 0.0
-    for i, batch in tqdm(enumerate(dataloader)):
+    for i, batch in tqdm(enumerate(dataloader), "train"):
         move_batch_to_device(device, **batch)
 
         optimizer.zero_grad()
-        outputs = model(**batch)
-        batch.update(outputs)
-
-        loss = loss_fn(**batch)
+        with torch.autocast(device_type=device.type):
+            outputs = model(**batch)
+            batch.update(outputs)
+            loss = loss_fn(**batch)
         loss.backward()
 
         optimizer.step()
-        scheduler.step()
+        lr_scheduler.step()
 
         loss_sum += loss.item()
 
+        print(i, iterations)
         if i + 1 >= iterations:
-            break
-    return loss_sum / iterations
+            print("!!")
+            return loss_sum / iterations, outputs
 
 
 def test(model, dataloader, loss_fn, device):
     loss_sum = 0.0
     model.eval()
     with torch.no_grad():
-        for batch in tqdm(dataloader):
+        for batch in tqdm(dataloader, "evaluation"):
             move_batch_to_device(device, **batch)
             outputs = model(**batch)
             batch.update(outputs)
@@ -49,10 +52,13 @@ def test(model, dataloader, loss_fn, device):
 
 
 def main(args):
-    with open("config.json") as fin:
+    save_dir = "saved/" + datetime.now().strftime("%d-%m-%Y_%H-%M")
+    os.makedirs(save_dir, exist_ok=True)
+
+    with open(args.config) as fin:
         config = json.load(fin)
 
-    wandb.init(**config["wandb"])
+    wandb_writer = WandbWriter(config["wandb_project"])
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
     print(f"device: {device}")
@@ -60,33 +66,39 @@ def main(args):
     batch_size = config["data"]["batch_size"]
     num_workers = config["data"]["num_workers"]
 
-    train_dataset = TinyStoriesDataset(**config["data"]["train"])
+    train_dataset = TinyStoriesDataset("train", **config["data"]["train"])
     train_dataloader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True, num_workers=num_workers, collate_fn=collate_fn)
 
-    test_dataset = TinyStoriesDataset(**config["data"]["test"])
-    test_dataloader = DataLoader(test_dataset, batch_size=batch_size, shuffle=False, num_workers=num_workers, collate_fn=collate_fn)
+    val_dataset = TinyStoriesDataset("val", **config["data"]["val"])
+    val_dataloader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False, num_workers=num_workers, collate_fn=collate_fn)
 
     model = Transformer(**config["model"])
     model.to(device)
 
     epochs = config["train"]["epochs"]
-    iterations_per_epochs = config["train"]["iterations_per_epoch"]
-    optimizer = torch.optim.Adam(model.parameters(), **config["optimizer"])
-    scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, epochs * iterations_per_epochs)
-    loss_fn = CrossEntropyLossWrapper(train_dataset.tokenizer.pad_id())
+    iterations = config["train"]["iterations"]
+    optimizer = torch.optim.AdamW(model.parameters(), **config["optimizer"])
+    lr_scheduler = torch.optim.lr_scheduler.CosineAnnealingLR(optimizer, epochs * iterations)
+    loss_fn = CrossEntropyLossWrapper()
 
-    for epoch in tqdm(range(epochs)):
-        train_loss_avg = train_epoch(model, train_dataloader, iterations_per_epochs, optimizer, scheduler, loss_fn, device)
-        test_loss_avg = test(model, test_dataloader, loss_fn, device)
+    for epoch in tqdm(range(1, epochs + 1)):
+        train_loss, train_example = train_epoch(model, train_dataloader, iterations, optimizer, lr_scheduler, loss_fn, device)
+        val_loss = test(model, val_dataloader, loss_fn, device)
 
-        print(f"train_loss {train_loss_avg} test_loss {test_loss_avg}")
-        wandb.log({"train_loss": train_loss_avg, "test_loss": test_loss_avg})
+        wandb_writer.log({"train loss": train_loss, "val loss": val_loss, "learning rate": lr_scheduler.get_last_lr()[0]})
+        wandb_writer.log_table([ids2text(train_example["logits"]), ids2text(train_example["src"])])
 
-    torch.save(model.state_dict(), "checkpoint.pth")
-    wandb.finish()
+        print(f"----- epoch: {epoch} -----")
+        print(f"train loss: {train_loss:.4f} val loss: {val_loss:.4f}")
+        print(f"learning rate: {lr_scheduler.get_last_lr()[0]:.8f}")
+
+        if epoch % config["train"]["save_period"] == 0:
+            torch.save(model.state_dict(), f"{save_dir}/checkpoint-{epoch}.pth")
+    wandb_writer.finish()
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
+    parser.add_argument("-c", "--config", default="configs/train.json", type=str, help="config file path (default: configs/train.json)")
     args = parser.parse_args()
     main(args)

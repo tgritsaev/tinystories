@@ -13,7 +13,7 @@ wget --quiet --show-progress "https://huggingface.co/datasets/roneneldan/TinySto
 ```
 Create data in special format
 ```shell
-python3 scripts/preprocess_data.py
+python3 scripts/preprocess_data.py -o output-dir -i input-dir -v vocab-size -l limit
 ```
 
 ## Train
