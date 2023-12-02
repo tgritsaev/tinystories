@@ -13,18 +13,16 @@ from src.model import Transformer
 from src.utils import ids2text, WandbWriter
 
 
-def move_batch_to_device(device, **batch):
+def move_batch_to_device(batch, device):
     for key in ["src"]:
-        print("!!!", device)
         batch[key] = batch[key].to(device)
-        print("???", batch[key].device)
 
 
 def train_epoch(model, dataloader, iterations, optimizer, lr_scheduler, loss_fn, device):
     model.train()
     loss_sum = 0.0
     for i, batch in tqdm(enumerate(dataloader), "train"):
-        move_batch_to_device(device, **batch)
+        move_batch_to_device(batch, device)
 
         optimizer.zero_grad()
         with torch.autocast(device_type=device.type):
@@ -47,7 +45,7 @@ def test(model, dataloader, loss_fn, device):
     model.eval()
     with torch.no_grad():
         for batch in tqdm(dataloader, "evaluation"):
-            move_batch_to_device(device, **batch)
+            move_batch_to_device(batch, device)
             outputs = model(**batch)
             batch.update(outputs)
             loss = loss_fn(**batch)
