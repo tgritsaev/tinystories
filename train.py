@@ -4,6 +4,7 @@ import argparse
 from datetime import datetime
 from tqdm import tqdm
 
+import numpy as np
 import torch
 from torch.utils.data import DataLoader
 
@@ -77,6 +78,9 @@ def main(args):
 
     model = Transformer(**config["model"])
     model = model.to(device)
+    model_parameters = filter(lambda p: p.requires_grad, model.parameters())
+    params = sum([np.prod(p.size()) for p in model_parameters])
+    print("Trainable parameters: {}".format(params))
 
     epochs = config["train"]["epochs"]
     iterations = config["train"]["iterations"]

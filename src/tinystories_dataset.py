@@ -13,8 +13,9 @@ def collate_fn(items):
 
 
 class TinyStoriesDataset(Dataset):
-    def __init__(self, part: str, data_path: str, limit: int = None):
+    def __init__(self, part: str, data_path: str, max_len: int = None, limit: int = None):
         super().__init__()
+        self.max_len = max_len
         print(f"Loading data from {part}...")
         self.idxs = torch.from_numpy(np.load(f"{data_path}/{part}_idxs.npy")).to(torch.int64)[:limit]
         self.data = torch.from_numpy(np.load(f"{data_path}/{part}.npy")).to(torch.int16)
@@ -26,5 +27,7 @@ class TinyStoriesDataset(Dataset):
 
     def __getitem__(self, idx):
         begin, end = self.idxs[idx]
+        if self.max_len:
+            end = min(end, begin + self.max_len)
         src = [BOS_ID] + list(self.data[begin : end + 1]) + [EOS_ID]
         return {"src": torch.tensor(src)}

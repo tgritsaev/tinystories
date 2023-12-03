@@ -3,10 +3,12 @@
         "batch_size": 128,
         "num_workers": 2,
         "train": {
-            "data_path": "data"
+            "data_path": "data",
+            "max_len": 254
         },
         "val": {
-            "data_path": "data"
+            "data_path": "data",
+            "max_len": 254
         }
     },
     "model": {
@@ -22,7 +24,7 @@
     },
     "train": {
         "epochs": 10,
-        "iterations": 1000,
+        "iterations": 4000,
         "save_period": 2
     },
     "wandb_project": "dl-2-tinystories"
