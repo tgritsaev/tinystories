@@ -11,7 +11,7 @@ from torch.utils.data import DataLoader
 from src.tinystories_dataset import TinyStoriesDataset, collate_fn
 from src.loss import CrossEntropyLossWrapper
 from src.model import Transformer
-from src.utils import WandbWriter, ids2text
+from src.utils import WandbWriter
 
 
 def move_batch_to_device(batch, device):
@@ -38,7 +38,6 @@ def train_epoch(model, dataloader, iterations, optimizer, lr_scheduler, loss_fn,
         with torch.autocast(device_type=device.type, dtype=torch.float16):
             outputs = model(batch["src"][:, :-1])
             batch.update(outputs)
-            batch["logits"] = batch["logits"].transpose(1, 2)
             loss = loss_fn(**batch)
         loss.backward()
 
@@ -62,7 +61,6 @@ def test(model, dataloader, loss_fn, device):
             with torch.autocast(device_type=device.type, dtype=torch.float16):
                 outputs = model(batch["src"][:, :-1])
                 batch.update(outputs)
-                batch["logits"] = batch["logits"].transpose(1, 2)
                 loss = loss_fn(**batch)
             loss_sum += loss
 
