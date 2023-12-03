@@ -105,7 +105,7 @@ class PositionalEncoding(nn.Module):
 
 
 class Transformer(nn.Module):
-    def __init__(self, vocab_len: int, d_model: int, nhead: int, dim_feedforward: int, nlayers: int, max_len: int = 256, dropout: float = 0.1):
+    def __init__(self, vocab_len: int, d_model: int, nhead: int, dim_feedforward: int, nlayers: int, max_len: int = 400, dropout: float = 0.1):
         super().__init__()
         self.max_len = max_len
 
