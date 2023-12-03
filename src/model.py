@@ -90,7 +90,7 @@ from src.utils import PAD_ID, BOS_ID, EOS_ID, text2ids, ids2text
 class PositionalEncoding(nn.Module):
     def __init__(self, d_model: int, dropout: float = 0.1, max_len: int = 400):
         super().__init__()
-        self.dropout = nn.Dropout(p=dropout)
+        self.dropout = nn.Dropout(dropout)
 
         position = torch.arange(max_len).unsqueeze(1)
         div_term = torch.exp(torch.arange(0, d_model, 2) * (-math.log(10000.0) / d_model))
@@ -105,24 +105,24 @@ class PositionalEncoding(nn.Module):
 
 
 class Transformer(nn.Module):
-    def __init__(self, vocab_len: int, d_model: int, nhead: int, dim_feedforward: int, nlayers: int, max_len: int = 400, dropout: float = 0.1):
+    def __init__(self, vocab_len: int, d_model: int, nhead: int, dim_feedforward: int, nlayers: int, max_len: int = 256, dropout: float = 0.1):
         super().__init__()
         self.max_len = max_len
 
-        self.pos_encoder = PositionalEncoding(d_model, dropout)
+        self.embedding = nn.Embedding(vocab_len, d_model)
+        self.pos_encoder = PositionalEncoding(d_model, dropout, max_len)
         encoder_layer = nn.TransformerEncoderLayer(d_model, nhead, dim_feedforward, dropout)
         self.transformer_encoder = nn.TransformerEncoder(encoder_layer, nlayers)
-        self.embedding = nn.Embedding(vocab_len, d_model)
         self.d_model = d_model
         self.linear = nn.Linear(d_model, vocab_len)
 
         self._init_weights()
 
     def _init_weights(self):
-        initrange = 0.1
-        self.embedding.weight.data.uniform_(-initrange, initrange)
+        bound = 0.1
+        self.embedding.weight.data.uniform_(-bound, bound)
         self.linear.bias.data.zero_()
-        self.linear.weight.data.uniform_(-initrange, initrange)
+        self.linear.weight.data.uniform_(-bound, bound)
 
     def forward(self, src, src_mask=None):
         """
