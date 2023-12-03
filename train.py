@@ -101,6 +101,7 @@ def main(args):
         wandb_writer.log({"train loss": train_loss, "val loss": val_loss, "learning rate": lr_scheduler.get_last_lr()[0]})
         preds = ids2text(train_example["logits"].argmax(-1))
         targets = ids2text(train_example["src"])
+        print(preds, targets)
         wandb_writer.log_table([[pred, target] for pred, target in zip(preds, targets)])
 
         print(f"----- epoch: {epoch} -----")
