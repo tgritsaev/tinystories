@@ -35,11 +35,11 @@ def train_epoch(model, dataloader, iterations, optimizer, lr_scheduler, loss_fn,
         move_batch_to_device(batch, device)
 
         optimizer.zero_grad()
-        # with torch.autocast(device_type=device.type, dtype=torch.float16):
-        outputs = model(batch["src"][:, :-1])
-        batch.update(outputs)
-        batch["logits"] = batch["logits"].transpose(1, 2)
-        loss = loss_fn(**batch)
+        with torch.autocast(device_type=device.type, dtype=torch.float16):
+            outputs = model(batch["src"][:, :-1])
+            batch.update(outputs)
+            batch["logits"] = batch["logits"].transpose(1, 2)
+            loss = loss_fn(**batch)
         loss.backward()
 
         optimizer.step()
