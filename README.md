@@ -49,7 +49,7 @@ python3 train.py
 python3 test.py
 ```
 `test.py` contains two arguments:
-* "-c", "--config", default="configs/test.json", type="str", help="config file path (default: configs/test.json)"
+* "-c", "--config", default="configs/test.json", type=str, help="config file path (default: configs/test.json)"
 * "-t", "--temperature", default=1.0, type=float, help="sampling temperature (default: 1.)"
 
 ## Wandb 
