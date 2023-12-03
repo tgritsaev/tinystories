@@ -3,13 +3,14 @@ HSE Deep Learning course homework, see the [statement](https://github.com/puhsu/
 
 ## Installation
 
-1. Run
+1. From the root directory run
 ```shell
 pip3 install -r requirements.txt
 ```
 2. Download the TinySrories data
 ```shell
 wget --quiet --show-progress "https://huggingface.co/datasets/roneneldan/TinyStories/resolve/main/TinyStories_all_data.tar.gz"
+tar -xvzf TinyStories_all_data.tar.gz TinyStories_all_data
 ```
 3. Run to create the dataset
 ```shell
