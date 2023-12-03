@@ -64,8 +64,8 @@ def main(args):
     np.save(os.path.join(args.output_dir, "train.npy"), np.concatenate(tokenized[:-val_part]).astype(np.int16))
     np.save(os.path.join(args.output_dir, "train_idxs.npy"), np.stack(idxs[:-val_part]).astype(np.int64))
 
-    np.save(os.path.join(args.output_dir, "val.npy"), np.concatenate(tokenized[:-val_part]).astype(np.int16))
-    np.save(os.path.join(args.output_dir, "val_idxs.npy"), np.stack(idxs[:-val_part]).astype(np.int64))
+    np.save(os.path.join(args.output_dir, "val.npy"), np.concatenate(tokenized[-val_part:]).astype(np.int16))
+    np.save(os.path.join(args.output_dir, "val_idxs.npy"), np.stack(idxs[-val_part:]).astype(np.int64))
 
     print(f"Dataset is saved in {args.output_dir}.")
 
