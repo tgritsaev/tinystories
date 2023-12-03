@@ -48,7 +48,7 @@ class Transformer(nn.Module):
         src = self.embedding(src) * math.sqrt(self.d_model)
         src = self.positional_encoding(src)
         if src_mask is None:
-            src_mask = nn.Transformer.generate_square_subsequent_mask(src.shape).to(src.device)
+            src_mask = nn.Transformer.generate_square_subsequent_mask(src.shape[0]).to(src.device)
         output = self.transformer_encoder(src, src_mask, src_padding_mask)
         output = self.linear(output)
         output = output.transpose(0, 1)
