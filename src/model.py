@@ -142,7 +142,7 @@ class Transformer(nn.Module):
         tokens = [BOS_ID] + text2ids(prefix)
         tokens = torch.tensor(tokens).to(next(self.parameters()).device)
 
-        logits = self.forward(tokens.unsqueeze(0)).transpose(1, 2) / temp
+        logits = self.forward(tokens.unsqueeze(0)).transpose(1, 2)["logits"] / temp
         new_tokens = torch.distributions.categorical.Categorical(logits=logits[:, :, -1]).sample()
         tokens = torch.cat([tokens, new_tokens], dim=0)
 
@@ -150,7 +150,7 @@ class Transformer(nn.Module):
             if new_tokens.item() == EOS_ID:
                 break
 
-            logits = self.forward(tokens.unsqueeze(0)).transpose(1, 2) / temp
+            logits = self.forward(tokens.unsqueeze(0)).transpose(1, 2)["logits"] / temp
             new_tokens = torch.distributions.categorical.Categorical(logits=logits[:, :, -1]).sample()
             tokens = torch.cat([tokens, new_tokens], dim=0)
 
