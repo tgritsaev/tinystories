@@ -24,7 +24,7 @@
         "weight_decay": 1e-6
     },
     "train": {
-        "epochs": 400,
+        "epochs": 340,
         "iterations": 100,
         "save_period": 20
     },
