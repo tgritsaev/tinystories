@@ -11,7 +11,7 @@ from torch.utils.data import DataLoader
 from src.tinystories_dataset import TinyStoriesDataset, collate_fn
 from src.loss import CrossEntropyLossWrapper
 from src.model import Transformer
-from src.utils import ids2text, WandbWriter
+from src.utils import WandbWriter
 
 
 def move_batch_to_device(batch, device):
@@ -23,14 +23,22 @@ def train_epoch(model, dataloader, iterations, optimizer, lr_scheduler, loss_fn,
     print("in train_epoch")
     model.train()
     loss_sum = 0.0
-    for i, batch in enumerate(dataloader):
+    data_iter = iter(dataloader)
+    for _ in range(iterations):
+        try:
+            batch = next(data_iter)
+        except StopIteration:
+            # StopIteration is thrown if dataset ends
+            # reinitialize data loader
+            data_iter = iter(dataloader)
+            batch = next(data_iter)
         move_batch_to_device(batch, device)
 
         optimizer.zero_grad()
-        with torch.autocast(device_type=device.type, dtype=torch.float16):
-            outputs = model(batch["src"][:, :-1])
-            batch.update(outputs)
-            loss = loss_fn(**batch)
+        # with torch.autocast(device_type=device.type, dtype=torch.float16):
+        outputs = model(batch["src"][:, :-1])
+        batch.update(outputs)
+        loss = loss_fn(**batch)
         loss.backward()
 
         optimizer.step()
@@ -39,8 +47,7 @@ def train_epoch(model, dataloader, iterations, optimizer, lr_scheduler, loss_fn,
         wandb_writer.log({"train loss": loss.item(), "learning rate": lr_scheduler.get_last_lr()[0]})
 
         loss_sum += loss.item()
-        if i + 1 >= iterations:
-            break
+
     return loss_sum / iterations
 
 

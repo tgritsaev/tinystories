@@ -4,7 +4,8 @@
         "num_workers": 1,
         "train": {
             "data_path": "data",
-            "max_len": 390
+            "max_len": 390,
+            "limit": 4
         },
         "val": {
             "data_path": "data",
@@ -24,9 +25,9 @@
         "weight_decay": 1e-5
     },
     "train": {
-        "epochs": 10,
-        "iterations": 5,
-        "save_period": 5
+        "epochs": 2,
+        "iterations": 50,
+        "save_period": 10
     },
     "wandb_project": null
 }

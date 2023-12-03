@@ -55,19 +55,22 @@ class Transformer(nn.Module):
         self._init_weights()
 
     def _init_weights(self):
-        for param in self.parameters():
-            if param.data.dim() == 2:
-                nn.init.kaiming_uniform_(param)
-            else:
-                nn.init.uniform_(param)
+        # for param in self.parameters():
+        #     if param.data.dim() == 2:
+        #         nn.init.kaiming_uniform_(param)
+        #     else:
+        #         nn.init.uniform_(param)
+        bound = 0.1
+        self.embedding.weight.data.uniform_(-bound, bound)
+        self.head.weight.data.uniform_(-bound, bound)
 
     def forward(self, src: torch.Tensor, mask: torch.Tensor = None) -> torch.Tensor:
         x = math.sqrt(self.d_model) * self.embedding(src)
-        x = self.positional_encoding(x).transpose(0, 1)
+        x = self.positional_encoding(x).transpose(0, 1)  # max_len x B x d_model
         if mask is None:
             mask = nn.Transformer.generate_square_subsequent_mask(x.shape[0]).to(x.device)
         x = self.transformer_encoder(x, mask)
-        return {"logits": self.head(x).transpose(0, 1)}
+        return {"logits": self.head(x).transpose(0, 1)}  # B x max_len x vocab_len
 
     @torch.inference_mode()
     def inference(self, prefix: str = "", temp: float = 1.0) -> str:

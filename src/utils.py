@@ -43,6 +43,8 @@ class WandbWriter:
     def log(self, msg):
         if not self.skip:
             wandb.log(msg)
+        else:
+            print(f"wandb: {msg}")
 
     def log_table(self, table):
         if not self.skip:
