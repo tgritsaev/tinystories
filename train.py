@@ -98,7 +98,7 @@ def main(args):
         train_loss, train_example = train_epoch(model, train_dataloader, iterations, optimizer, lr_scheduler, loss_fn, device)
         val_loss = test(model, val_dataloader, loss_fn, device)
 
-        wandb_writer.log({"train loss": train_loss.cpu(), "val loss": val_loss.cpu(), "learning rate": lr_scheduler.get_last_lr()[0]})
+        wandb_writer.log({"train loss": train_loss, "val loss": val_loss, "learning rate": lr_scheduler.get_last_lr()[0]})
         preds = ids2text(train_example["logits"].argmax(-1))
         targets = ids2text(train_example["src"])
         wandb_writer.log_table([[pred, target] for pred, target in zip(preds, targets)])
