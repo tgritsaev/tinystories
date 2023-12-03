@@ -49,19 +49,23 @@ def main(args):
 
     print("Preparing the dataset...")
     os.makedirs(args.output_dir, exist_ok=True)
-    for i, file in enumerate(tqdm(input_files, "json -> npy")):
+    tokenized = []
+    idx = 0
+    idxs = []
+    for file in tqdm(input_files, "json -> npy"):
         with open(file) as fin:
             data = json.load(fin)
-        output_file_name = "val" if (i + 1 == len(input_files) and args.limit > 1) else "train"
-        tokenized = []
-        idx = 0
-        idxs = []
         for text in data:
             tokenized.append(tokenizer.encode(text["story"]))
             idxs.append(np.array([idx, idx + len(tokenized[-1])]))
             idx += len(tokenized[-1]) + 1
-        np.save(os.path.join(args.output_dir, f"{output_file_name}.npy"), np.concatenate(tokenized).astype(np.int16))
-        np.save(os.path.join(args.output_dir, f"{output_file_name}_idxs.npy"), np.stack(idxs).astype(np.int64))
+
+    val_part = 10000
+    np.save(os.path.join(args.output_dir, "train.npy"), np.concatenate(tokenized[:-val_part]).astype(np.int16))
+    np.save(os.path.join(args.output_dir, "train_idxs.npy"), np.stack(idxs[:-val_part]).astype(np.int64))
+
+    np.save(os.path.join(args.output_dir, "val.npy"), np.concatenate(tokenized[:-val_part]).astype(np.int16))
+    np.save(os.path.join(args.output_dir, "val_idxs.npy"), np.stack(idxs[:-val_part]).astype(np.int64))
 
     print(f"Dataset is saved in {args.output_dir}.")
 
