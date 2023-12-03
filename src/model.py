@@ -71,13 +71,10 @@ class Transformer(nn.Module):
 
     @torch.inference_mode()
     def inference(self, prefix: str = "", temp: float = 1.0) -> str:
-        self.eval()
-        device = next(self.parameters()).device
-
         tokens = [BOS_ID] + text2ids(prefix)
-        tokens = torch.tensor(tokens).to(device)
+        tokens = torch.tensor(tokens).to(next(self.parameters()).device)
 
-        logits = self.forward(tokens.unsqueeze(0)).transpose(1, 2) / temp
+        logits = self.forward(tokens.unsqueeze(0))["logits"].transpose(1, 2) / temp
 
         new_tokens = torch.distributions.categorical.Categorical(logits=logits[:, :, -1]).sample()
         tokens = torch.cat([tokens, new_tokens], dim=0)
@@ -86,9 +83,9 @@ class Transformer(nn.Module):
             if new_tokens.item() == EOS_ID:
                 break
 
-            logits = self.forward(tokens.unsqueeze(0)).transpose(1, 2) / temp
+            logits = self.forward(tokens.unsqueeze(0))["logits"].transpose(1, 2) / temp
 
             new_tokens = torch.distributions.categorical.Categorical(logits=logits[:, :, -1]).sample()
             tokens = torch.cat([tokens, new_tokens], dim=0)
 
-        return {"text": ids2text(tokens.squeeze())}
+        return ids2text(tokens.squeeze())

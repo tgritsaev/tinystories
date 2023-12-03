@@ -9,7 +9,7 @@
         "val": {
             "data_path": "data",
             "max_len": 390,
-            "limit": 1000
+            "limit": 10000
         }
     },
     "model": {
@@ -25,7 +25,7 @@
     },
     "train": {
         "epochs": 20,
-        "iterations": 100,
+        "iterations": 1000,
         "save_period": 1
     },
     "wandb_project": "dl-2-tinystories"

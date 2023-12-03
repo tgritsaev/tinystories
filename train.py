@@ -39,9 +39,9 @@ def train_epoch(model, dataloader, iterations, optimizer, lr_scheduler, loss_fn,
         wandb_writer.log({"train loss": loss.item(), "learning rate": lr_scheduler.get_last_lr()[0]})
 
         loss_sum += loss.item()
-
         if i + 1 >= iterations:
-            return loss_sum / iterations, batch
+            break
+    return loss_sum / iterations
 
 
 def test(model, dataloader, loss_fn, device):
@@ -99,17 +99,14 @@ def main(args):
     loss_fn = CrossEntropyLossWrapper()
 
     for epoch in tqdm(range(1, epochs + 1)):
-        train_loss, train_example = train_epoch(model, train_dataloader, iterations, optimizer, lr_scheduler, loss_fn, wandb_writer, device)
+        train_loss = train_epoch(model, train_dataloader, iterations, optimizer, lr_scheduler, loss_fn, wandb_writer, device)
         val_loss = test(model, val_dataloader, loss_fn, device)
 
         wandb_writer.log({"val loss": val_loss})
-        preds = ids2text(train_example["logits"].argmax(-1))[:2]
-        targets = ids2text(train_example["src"])[:2]
-        wandb_writer.log_table([[pred, target] for pred, target in zip(preds, targets)])
 
         print(f"----- epoch: {epoch} -----")
-        print(f"predictions:\n{preds}\n\ntargets:{targets}")
         print(f"train loss:\t{train_loss:.4f}\nval loss:\t{val_loss:.4f}\nlearning rate:\t{lr_scheduler.get_last_lr()[0]:.8f}")
+        print(f"generated example\n:{model.inference()}")
         print(f"--------------------------")
 
         if epoch % config["train"]["save_period"] == 0:

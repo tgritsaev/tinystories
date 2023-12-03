@@ -8,10 +8,11 @@ from src.model import Transformer
 
 def inference(model):
     model.eval()
-    print("Write prefix, the model will continue")
+    print("Write prefix, the model will continue.")
     with torch.no_grad():
         while prefix := input():
-            print(model.inference(prefix)["text"])
+            print(f"prefix:\n{prefix}")
+            print(f"generated:\n{model.inference(prefix)}\n")
 
 
 def main(args):
