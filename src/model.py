@@ -105,15 +105,16 @@ class PositionalEncoding(nn.Module):
 
 
 class Transformer(nn.Module):
-    def __init__(self, vocab_len: int, d_model: int, nhead: int, dim_feedforward: int, nlayers: int, max_len: int = 256, dropout: float = 0.1):
+    def __init__(self, vocab_len: int, d_model: int, nhead: int, dim_feedforward: int, nlayers: int, max_len: int = 400, dropout: float = 0.1):
         super().__init__()
         self.max_len = max_len
+        self.d_model = d_model
 
+        print(vocab_len, d_model, dim_feedforward)
         self.embedding = nn.Embedding(vocab_len, d_model)
         self.pos_encoder = PositionalEncoding(d_model, dropout, max_len)
         encoder_layer = nn.TransformerEncoderLayer(d_model, nhead, dim_feedforward, dropout)
         self.transformer_encoder = nn.TransformerEncoder(encoder_layer, nlayers)
-        self.d_model = d_model
         self.linear = nn.Linear(d_model, vocab_len)
 
         self._init_weights()
