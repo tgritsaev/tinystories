@@ -26,7 +26,7 @@ def train_epoch(model, dataloader, iterations, optimizer, lr_scheduler, loss_fn,
         move_batch_to_device(batch, device)
 
         optimizer.zero_grad()
-        with torch.autocast(device_type=device.type):
+        with torch.autocast(device_type=device.type, dtype=torch.float16):
             outputs = model(**batch)
             batch.update(outputs)
             loss = loss_fn(**batch)
@@ -47,9 +47,10 @@ def test(model, dataloader, loss_fn, device):
     with torch.no_grad():
         for batch in tqdm(dataloader, "evaluation"):
             move_batch_to_device(batch, device)
-            outputs = model(**batch)
-            batch.update(outputs)
-            loss = loss_fn(**batch)
+            with torch.autocast(device_type=device.type, dtype=torch.float16):
+                outputs = model(**batch)
+                batch.update(outputs)
+                loss = loss_fn(**batch)
             loss_sum += loss
 
     return loss_sum / len(dataloader)
