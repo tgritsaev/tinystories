@@ -53,8 +53,8 @@ python3 test.py
 * `"-t", "--temperature", default=1.0, type=float, help="sampling temperature (default: 1.)"`
 
 ## Wandb 
-
-You can see my wandb project and report https://wandb.ai/tgritsaev/tiny_stories_dl2/overview?workspace=user-tgritsaev.
+1. [Wandb project](https://wandb.ai/tgritsaev/tiny_stories_dl2/overview?workspace=user-tgritsaev).
+2. [Wandb report](todo).
 
 ## Authors
 
