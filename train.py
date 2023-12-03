@@ -106,7 +106,7 @@ def main(args):
 
         print(f"----- epoch: {epoch} -----")
         print(f"train loss:\t{train_loss:.4f}\nval loss:\t{val_loss:.4f}\nlearning rate:\t{lr_scheduler.get_last_lr()[0]:.8f}")
-        print(f"generated example\n:{model.inference()}")
+        print(f"generated example:\n{model.inference()}")
         print(f"--------------------------")
 
         if epoch % config["train"]["save_period"] == 0:
