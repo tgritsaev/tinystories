@@ -9,7 +9,7 @@
         "val": {
             "data_path": "data",
             "max_len": 390,
-            "limit": 10000
+            "limit": 1000
         }
     },
     "model": {
@@ -24,9 +24,9 @@
         "weight_decay": 1e-6
     },
     "train": {
-        "epochs": 40,
-        "iterations": 1000,
-        "save_period": 2
+        "epochs": 400,
+        "iterations": 100,
+        "save_period": 20
     },
     "wandb_project": "dl-2-tinystories"
 }

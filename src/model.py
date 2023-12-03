@@ -25,6 +25,8 @@ class PositionalEncoding(nn.Module):
 class Transformer(nn.Module):
     def __init__(self, vocab_len: int, d_model: int, nhead: int, dim_feedforward: int, nlayers: int, dropout: float = 0.1):
         super().__init__()
+        self.max_len = 400
+
         self.model_type = "Transformer"
         self.pos_encoder = PositionalEncoding(d_model, dropout)
         encoder_layers = nn.TransformerEncoderLayer(d_model, nhead, dim_feedforward, dropout)
@@ -75,7 +77,7 @@ class Transformer(nn.Module):
         new_tokens = torch.distributions.Categorical(logits=logits[:, :, -1]).sample()
         tokens = torch.cat([tokens, new_tokens], dim=0)
 
-        while tokens.shape[0] < self.max_length:
+        while tokens.shape[0] < self.max_len:
             if new_tokens.item() == EOS_ID:
                 break
 
