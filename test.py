@@ -26,6 +26,7 @@ def main(args):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("-c", "--config", default="configs/test.json", type=str, help="config file path (default: configs/test.json)")
+    parser.add_argument("-p", "--checkpoint-path", default="checkpoint.pth", type=str, help="checkpoint path (default: checkpoint.pth)")
     parser.add_argument("-t", "--temperature", default=1.0, type=float, help="sampling temperature (default: 1.)")
     args = parser.parse_args()
     main(args)
