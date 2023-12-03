@@ -62,42 +62,32 @@ class Transformer(nn.Module):
                 nn.init.uniform_(param)
 
     def forward(self, src: torch.Tensor, mask: torch.Tensor = None) -> torch.Tensor:
-        x = math.sqrt(self.d_model) * self.embedding(src)
+        x = math.sqrt(self.d_model) * self.embedding(src).transpose(0, 1)
         x = self.positional_encoding(x)
         if mask is None:
             mask = nn.Transformer.generate_square_subsequent_mask(x.shape[0]).to(x.device)
         x = self.transformer_encoder(x, mask)
-        return {"logits": self.head(x)}
+        return {"logits": self.head(x).transpose(0, 1)}
 
     @torch.inference_mode()
     def inference(self, prefix: str = "", temp: float = 1.0) -> str:
         self.eval()
         device = next(self.parameters()).device
 
-        # encode prefix
         tokens = [BOS_ID] + text2ids(prefix)
         tokens = torch.tensor(tokens).to(device)
 
-        # generate hidden for prefix
-        logits = self.forward(tokens.unsqueeze(1))
-        logits = logits.transpose(0, 1).transpose(1, 2)
-        logits /= temp
+        logits = self.forward(tokens.unsqueeze(0)).transpose(1, 2) / temp
 
-        # sample new token from logits
         new_tokens = torch.distributions.categorical.Categorical(logits=logits[:, :, -1]).sample()
         tokens = torch.cat([tokens, new_tokens], dim=0)
 
-        # 2 stopping conditions: reaching max len or getting <eos> token
         while tokens.shape[0] < self.max_len:
             if new_tokens.item() == EOS_ID:
                 break
 
-            # process newly obtained token
-            logits = self.forward(tokens.unsqueeze(1))
-            logits = logits.transpose(0, 1).transpose(1, 2)
-            logits /= temp
+            logits = self.forward(tokens.unsqueeze(0)).transpose(1, 2) / temp
 
-            # sample the next token from logits
             new_tokens = torch.distributions.categorical.Categorical(logits=logits[:, :, -1]).sample()
             tokens = torch.cat([tokens, new_tokens], dim=0)
 
