@@ -3,10 +3,12 @@
         "batch_size": 4,
         "num_workers": 1,
         "train": {
-            "data_path": "data"
+            "data_path": "data",
+            "max_len": 390
         },
         "val": {
             "data_path": "data",
+            "max_len": 390,
             "limit": 8
         }
     },

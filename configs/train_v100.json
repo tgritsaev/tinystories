@@ -4,11 +4,11 @@
         "num_workers": 2,
         "train": {
             "data_path": "data",
-            "max_len": 254
+            "max_len": 390
         },
         "val": {
             "data_path": "data",
-            "max_len": 254
+            "max_len": 390
         }
     },
     "model": {

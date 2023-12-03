@@ -25,7 +25,6 @@ class PositionalEncoding(nn.Module):
         self.register_buffer("pe", pe, persistent=False)
 
     def forward(self, x):
-        print(x.shape, self.pe.shape)
         x = x + self.pe[:, : x.shape[1], :]
         return x
 
@@ -39,7 +38,7 @@ class Transformer(nn.Module):
         d_model: int,
         dim_feedforward: int,
         activation=F.leaky_relu,
-        max_len: int = 256,
+        max_len: int = 400,
         dropout: float = 0.1,
     ):
         super().__init__()
