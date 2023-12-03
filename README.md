@@ -1,11 +1,9 @@
 # Tiny Stories
-
 HSE Deep Learning course homework.
 During this homework I implemented language model (transformer), which creates simple stories for children.s
 See the original [task statement](https://github.com/puhsu/dl-hse/tree/main/week06-transformers/bhw01).
 
 ## Code organization
-
 ```shell
 ├── README.md             <- Top-level README.
 ├── requirements.txt      <- project requirements.
@@ -21,7 +19,6 @@ See the original [task statement](https://github.com/puhsu/dl-hse/tree/main/week
 ```
 
 ## Installation
-
 1. To install libraries run from the root directory
 ```shell
 pip3 install -r requirements.txt
@@ -37,7 +34,6 @@ python3 preprocess_data.py -o output-dir -i input-dir -v vocab-size -l limit
 ```
 
 ## Train
-
 1. To setup wandb, if you have not used wandb before, run `wandb login` in bash.
 2. To train run
 ```shell
@@ -57,7 +53,6 @@ python3 test.py
 2. [Wandb report](https://wandb.ai/tgritsaev/dl-2-tinystories/reports/bhw-dl-2-HSE-course-tinystories--Vmlldzo2MTUzNzk4).
 
 ## Authors
-
 * Timofei Gritsaev
 
 ## Credits
