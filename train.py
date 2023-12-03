@@ -20,9 +20,10 @@ def move_batch_to_device(batch, device):
 
 
 def train_epoch(model, dataloader, iterations, optimizer, lr_scheduler, loss_fn, device):
+    print("in train_epoch")
     model.train()
     loss_sum = 0.0
-    for i, batch in tqdm(enumerate(dataloader), "train"):
+    for i, batch in enumerate(dataloader):
         move_batch_to_device(batch, device)
 
         optimizer.zero_grad()
@@ -42,10 +43,11 @@ def train_epoch(model, dataloader, iterations, optimizer, lr_scheduler, loss_fn,
 
 
 def test(model, dataloader, loss_fn, device):
+    print("in evaluation")
     loss_sum = 0.0
     model.eval()
     with torch.no_grad():
-        for batch in tqdm(dataloader, "evaluation"):
+        for batch in dataloader:
             move_batch_to_device(batch, device)
             with torch.autocast(device_type=device.type, dtype=torch.float16):
                 outputs = model(**batch)
@@ -99,13 +101,13 @@ def main(args):
         val_loss = test(model, val_dataloader, loss_fn, device)
 
         wandb_writer.log({"train loss": train_loss, "val loss": val_loss, "learning rate": lr_scheduler.get_last_lr()[0]})
-        preds = ids2text(train_example["logits"].argmax(-1))
-        targets = ids2text(train_example["src"])
-        print(preds, targets)
+        preds = ids2text(train_example["logits"].argmax(-1))[:2]
+        targets = ids2text(train_example["src"])[:2]
         wandb_writer.log_table([[pred, target] for pred, target in zip(preds, targets)])
 
         print(f"----- epoch: {epoch} -----")
         print(f"train loss:\t{train_loss:.4f}\nval loss:\t{val_loss:.4f}\nlearning rate:\t{lr_scheduler.get_last_lr()[0]:.8f}")
+        print(f"predictions:\n{preds}\n\ntargets:{targets}")
         print(f"--------------------------")
 
         if epoch % config["train"]["save_period"] == 0:

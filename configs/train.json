@@ -8,7 +8,8 @@
         },
         "val": {
             "data_path": "data",
-            "max_len": 390
+            "max_len": 390,
+            "limit": 1000
         }
     },
     "model": {
@@ -19,12 +20,12 @@
         "dim_feedforward": 512
     },
     "optimizer": {
-        "lr": 1e-3,
+        "lr": 3e-4,
         "weight_decay": 1e-6
     },
     "train": {
         "epochs": 20,
-        "iterations": 1000,
+        "iterations": 100,
         "save_period": 1
     },
     "wandb_project": "dl-2-tinystories"
