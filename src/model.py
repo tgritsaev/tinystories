@@ -6,27 +6,44 @@ import torch.nn.functional as F
 from src.utils import PAD_ID, BOS_ID, EOS_ID, text2ids, ids2text
 
 
-class PositionalEncoding(nn.Module):
-    def __init__(self, embed_dim, max_len):
-        """
-        Inputs
-            embed_dim - Hidden dimensionality of the input.
-            max_len - Maximum length of a sequence to expect.
-        """
-        super().__init__()
-        pe = torch.zeros(1, max_len, embed_dim)  # here should be a tensor of size (1, max_len, embed_dim), dummy dimension is needed for proper addition
-        tmp = torch.arange(0, max_len).unsqueeze(1) / torch.pow(10000, torch.arange(0, embed_dim, 2) / embed_dim)
-        pe[0, :, ::2] = torch.sin(tmp)
-        pe[0, :, 1::2] = torch.cos(tmp)
+# class PositionalEncoding(nn.Module):
+#     def __init__(self, embed_dim, max_len):
+#         """
+#         Inputs
+#             embed_dim - Hidden dimensionality of the input.
+#             max_len - Maximum length of a sequence to expect.
+#         """
+#         super().__init__()
+#         pe = torch.zeros(1, max_len, embed_dim)  # here should be a tensor of size (1, max_len, embed_dim), dummy dimension is needed for proper addition
+#         tmp = torch.arange(0, max_len).unsqueeze(1) / torch.pow(10000, torch.arange(0, embed_dim, 2) / embed_dim)
+#         pe[0, :, ::2] = torch.sin(tmp)
+#         pe[0, :, 1::2] = torch.cos(tmp)
 
-        # register_buffer => Tensor which is not a parameter, but should be part of the modules state.
-        # Used for tensors that need to be on the same device as the module.
-        # persistent=False tells PyTorch to not add the buffer to the state dict (e.g. when we save the model)
-        self.register_buffer("pe", pe, persistent=False)
+#         # register_buffer => Tensor which is not a parameter, but should be part of the modules state.
+#         # Used for tensors that need to be on the same device as the module.
+#         # persistent=False tells PyTorch to not add the buffer to the state dict (e.g. when we save the model)
+#         self.register_buffer("pe", pe, persistent=False)
+
+#     def forward(self, x):
+#         x = x + self.pe[:, : x.shape[1], :]
+#         return x
+
+
+class PositionalEncoding(nn.Module):
+    def __init__(self, d_model: int, max_len: int = 400, dropout: float = 0.1):
+        super().__init__()
+        self.dropout = nn.Dropout(dropout)
+
+        position = torch.arange(max_len).unsqueeze(1)
+        div_term = torch.exp(torch.arange(0, d_model, 2) * (-math.log(10000.0) / d_model))
+        pe = torch.zeros(max_len, 1, d_model)
+        pe[:, 0, 0::2] = torch.sin(position * div_term)
+        pe[:, 0, 1::2] = torch.cos(position * div_term)
+        self.register_buffer("pe", pe)
 
     def forward(self, x):
-        x = x + self.pe[:, : x.shape[1], :]
-        return x
+        x = x + self.pe[: x.size(0)]
+        return self.dropout(x)
 
 
 class Transformer(nn.Module):
@@ -46,7 +63,7 @@ class Transformer(nn.Module):
         self.d_model = d_model
 
         self.embedding = nn.Embedding(vocab_len, d_model, PAD_ID)
-        self.positional_encoding = PositionalEncoding(d_model, max_len)
+        self.positional_encoding = PositionalEncoding(d_model, max_len, dropout)
 
         encoder_layer = nn.TransformerEncoderLayer(d_model, nhead, dim_feedforward, dropout, activation)
         self.transformer_encoder = nn.TransformerEncoder(encoder_layer, nlayers)
@@ -65,8 +82,8 @@ class Transformer(nn.Module):
         self.head.weight.data.uniform_(-bound, bound)
 
     def forward(self, src: torch.Tensor, mask: torch.Tensor = None) -> torch.Tensor:
-        x = math.sqrt(self.d_model) * self.embedding(src)
-        x = self.positional_encoding(x).transpose(0, 1)  # max_len x B x d_model
+        x = math.sqrt(self.d_model) * self.embedding(src.transpose(0, 1))
+        x = self.positional_encoding(x)  # max_len x B x d_model
         if mask is None:
             mask = nn.Transformer.generate_square_subsequent_mask(x.shape[0]).to(x.device)
         x = self.transformer_encoder(x, mask)
