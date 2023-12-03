@@ -25,8 +25,8 @@
         "weight_decay": 1e-5
     },
     "train": {
-        "epochs": 2,
-        "iterations": 50,
+        "epochs": 5,
+        "iterations": 5,
         "save_period": 10
     },
     "wandb_project": null
