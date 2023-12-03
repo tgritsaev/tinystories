@@ -54,7 +54,7 @@ python3 test.py
 
 ## Wandb 
 1. [Wandb project](https://wandb.ai/tgritsaev/tiny_stories_dl2/overview?workspace=user-tgritsaev).
-2. [Wandb report](todo).
+2. [Wandb report](https://wandb.ai/tgritsaev/dl-2-tinystories/reports/bhw-dl-2-HSE-course-tinystories--Vmlldzo2MTUzNzk4).
 
 ## Authors
 
