@@ -59,3 +59,6 @@ python3 test.py
 ## Authors
 
 * Timofei Gritsaev
+
+## Credits
+Model implementation is took from [pytorch tutorial](https://pytorch.org/tutorials/beginner/transformer_tutorial.html?highlight=language%20models).
