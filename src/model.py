@@ -112,37 +112,28 @@ class Transformer(nn.Module):
 
         print(vocab_len, d_model, dim_feedforward)
         self.embedding = nn.Embedding(vocab_len, d_model)
-        self.pos_encoder = PositionalEncoding(d_model, dropout, max_len)
+        self.positional_encoding = PositionalEncoding(d_model, dropout, max_len)
         encoder_layer = nn.TransformerEncoderLayer(d_model, nhead, dim_feedforward, dropout)
         self.transformer_encoder = nn.TransformerEncoder(encoder_layer, nlayers)
-        self.linear = nn.Linear(d_model, vocab_len)
+        self.head = nn.Linear(d_model, vocab_len)
 
         self._init_weights()
 
     def _init_weights(self):
         bound = 0.1
         self.embedding.weight.data.uniform_(-bound, bound)
-        self.linear.bias.data.zero_()
-        self.linear.weight.data.uniform_(-bound, bound)
+        self.head.bias.data.zero_()
+        self.head.weight.data.uniform_(-bound, bound)
 
     def forward(self, src, src_mask=None):
-        """
-        Arguments:
-            src: Tensor, shape ``[batch_size, seq_len, batch_size]``
-            src_mask: Tensor, shape ``[seq_len, seq_len]``
-
-        Returns:
-            output Tensor of shape ``[batch_size, seq_len, ntoken]``
-        """
+        src_padding_mask = src == 0
         src = src.transpose(0, 1)
         src = self.embedding(src) * math.sqrt(self.d_model)
-        src = self.pos_encoder(src)
+        src = self.positional_encoding(src)
         if src_mask is None:
             src_mask = nn.Transformer.generate_square_subsequent_mask(len(src)).to(src.device)
-        output = self.transformer_encoder(src, src_mask)
-        output = self.linear(output)
-        output = output.transpose(0, 1)
-        return {"logits": output}
+        output = self.transformer_encoder(src, src_mask, src_padding_mask)
+        return {"logits": self.head(output).transpose(0, 1)}
 
     @torch.inference_mode()
     def inference(self, prefix: str = "", temp: float = 1.0) -> str:
@@ -152,7 +143,6 @@ class Transformer(nn.Module):
         tokens = torch.tensor(tokens).to(next(self.parameters()).device)
 
         logits = self.forward(tokens.unsqueeze(0)).transpose(1, 2) / temp
-
         new_tokens = torch.distributions.categorical.Categorical(logits=logits[:, :, -1]).sample()
         tokens = torch.cat([tokens, new_tokens], dim=0)
 
