@@ -27,10 +27,10 @@ def train_epoch(model, dataloader, iterations, optimizer, lr_scheduler, loss_fn,
         move_batch_to_device(batch, device)
 
         optimizer.zero_grad()
-        with torch.autocast(device_type=device.type, dtype=torch.float16):
-            outputs = model(**batch)
-            batch.update(outputs)
-            loss = loss_fn(**batch)
+        # with torch.autocast(device_type=device.type, dtype=torch.float16):
+        outputs = model(batch["src"][:, :-1])
+        batch.update(outputs)
+        loss = loss_fn(**batch)
         loss.backward()
 
         optimizer.step()
@@ -51,10 +51,10 @@ def test(model, dataloader, loss_fn, device):
     with torch.no_grad():
         for batch in dataloader:
             move_batch_to_device(batch, device)
-            with torch.autocast(device_type=device.type, dtype=torch.float16):
-                outputs = model(**batch)
-                batch.update(outputs)
-                loss = loss_fn(**batch)
+            # with torch.autocast(device_type=device.type, dtype=torch.float16):
+            outputs = model(batch["src"][:, :-1])
+            batch.update(outputs)
+            loss = loss_fn(**batch)
             loss_sum += loss
 
     return loss_sum / len(dataloader)

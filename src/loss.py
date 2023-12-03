@@ -10,4 +10,4 @@ class CrossEntropyLossWrapper(nn.Module):
         self.loss_fn = nn.CrossEntropyLoss(ignore_index=PAD_ID)
 
     def forward(self, src, logits, **kwargs):
-        return self.loss_fn(logits[:, :-1].transpose(1, 2), src[:, 1:])
+        return self.loss_fn(logits.transpose(1, 2), src[:, 1:])
