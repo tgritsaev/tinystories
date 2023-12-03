@@ -28,7 +28,6 @@ class Transformer(nn.Module):
         self.max_len = max_len
         self.d_model = d_model
 
-        print(vocab_len, d_model, dim_feedforward)
         self.embedding = nn.Embedding(vocab_len, d_model)
         self.positional_encoding = PositionalEncoding(d_model, dropout, max_len)
         encoder_layer = nn.TransformerEncoderLayer(d_model, nhead, dim_feedforward, dropout)
