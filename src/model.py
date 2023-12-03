@@ -43,15 +43,16 @@ class Transformer(nn.Module):
         self.head.weight.data.uniform_(-bound, bound)
 
     def forward(self, src, src_mask=None):
-        # src_padding_mask = src == 0 # no effect
+        src_padding_mask = src == 0  # no effect
         src = src.transpose(0, 1)
         src = self.embedding(src) * math.sqrt(self.d_model)
         src = self.positional_encoding(src)
         if src_mask is None:
-            src_mask = nn.Transformer.generate_square_subsequent_mask(len(src)).to(src.device)
-        # output = self.transformer_encoder(src, src_mask, src_padding_mask)
-        output = self.transformer_encoder(src, src_mask)
-        return {"logits": self.head(output).transpose(0, 1)}
+            src_mask = nn.Transformer.generate_square_subsequent_mask(src.shape).to(src.device)
+        output = self.transformer_encoder(src, src_mask, src_padding_mask)
+        output = self.linear(output)
+        output = output.transpose(0, 1)
+        return {"logits": output}
 
     @torch.inference_mode()
     def inference(self, prefix: str = "", temp: float = 1.0) -> str:
