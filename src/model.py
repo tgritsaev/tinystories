@@ -75,7 +75,6 @@ class Transformer(nn.Module):
         tokens = torch.tensor(tokens).to(next(self.parameters()).device)
 
         logits = self.forward(tokens.unsqueeze(0))["logits"].transpose(1, 2) / temp
-
         new_tokens = torch.distributions.categorical.Categorical(logits=logits[:, :, -1]).sample()
         tokens = torch.cat([tokens, new_tokens], dim=0)
 
@@ -84,7 +83,6 @@ class Transformer(nn.Module):
                 break
 
             logits = self.forward(tokens.unsqueeze(0))["logits"].transpose(1, 2) / temp
-
             new_tokens = torch.distributions.categorical.Categorical(logits=logits[:, :, -1]).sample()
             tokens = torch.cat([tokens, new_tokens], dim=0)
 
