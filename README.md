@@ -22,7 +22,7 @@ See the original [task statement](https://github.com/puhsu/dl-hse/tree/main/week
 
 ## Installation
 
-1. Run from the root directory
+1. To install libraries run from the root directory
 ```shell
 pip3 install -r requirements.txt
 ```
