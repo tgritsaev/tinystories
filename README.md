@@ -32,7 +32,7 @@ tar -xvzf TinyStories_all_data.tar.gz TinyStories_all_data
 ```shell
 python3 preprocess_data.py -o output-dir -i input-dir -v vocab-size -l limit
 ```
-4. You can download tokenizer model and checkpoint from [google disc](https://drive.google.com/drive/folders/1wEMJGgeHT653O2UbM8LcjRau-W-BrUF4?usp=sharing) to reproduce only my final results.
+1. You can download tokenizer model and checkpoint from [google disk](https://drive.google.com/drive/folders/1wEMJGgeHT653O2UbM8LcjRau-W-BrUF4?usp=sharing) to reproduce my final results.
 
 ## Example
 The model generates simple stories for children, for instance:
