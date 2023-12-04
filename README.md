@@ -35,7 +35,8 @@ python3 preprocess_data.py -o output-dir -i input-dir -v vocab-size -l limit
 4. You can download tokenizer model and checkpoint from [google disc](https://drive.google.com/drive/folders/1wEMJGgeHT653O2UbM8LcjRau-W-BrUF4?usp=sharing) to reproduce only my final results.
 
 ## Example
-The model generates simple stories for children:
+The model generates simple stories for children, for instance:
+
 Once upon a time, there was a little girl named Lily. She loved to play with her toys and eat yummy snacks. One day, her mommy took her to the park to play. While they were playing, Lily saw a big, scary dog. She was scared and started to cry. Her mommy hugged her and said, "Don't worry, we'll protect you." After a while, the dog stopped barking and went away. Lily was happy that she was safe and could play with her toys again. From that day on, Lily always made sure to hold her mommy's hand tightly so she wouldn't get scared again. Once upon a time, a little girl named Lily went to the park with her mommy. They saw a big building with lots of windows and windows. Lily thought it was very cool and wanted to go inside. Her mommy said, "Lily, we can't go inside. It's too dangerous." But Lily didn't listen and went inside anyway. Later that day, Lily's mommy gave her a bottle of poison to drink. Lily didn't like it and said, "Mommy, I don't like it." Her mommy said, "You need to take care of the plants. They will grow big and strong like you." Lily listened to her mommy and took care of the plants. She watered them every day and said, "Thank you, mommy. I love you."
 
 ## Train
